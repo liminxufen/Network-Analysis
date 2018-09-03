@@ -47,7 +47,7 @@ function Statistic_CPU_Ratio() {
         #计算每个cpu核
         for ((i=0; i<=$[$cpu_count-1]; i++))
         do
-            c="cpu"$i
+            c="cpu$i"
             echo `cat /proc/stat | grep -w $c | awk -v cpu=$c '{$1="";print cpu, $0}'` >> ./cpu1.tmp
             #cpu_be=(`cat /proc/stat | grep -w $c | awk -v cpu=$c '{$1="";print cpu, $0}'`)
         done    
@@ -72,7 +72,7 @@ function Statistic_CPU_Ratio() {
         #15s后再次计算每个cpu核
         for ((i=0; i<=$[$cpu_count-1]; i++))
         do
-            c="cpu"$i
+            c="cpu$i"
             echo `cat /proc/stat | grep -w $c | awk -v cpu=$c '{$1="";print cpu, $0}'` >> ./cpu2.tmp
             #cpu_af=(`cat /proc/stat | grep -w $c | awk -v cpu=$c '{$1="";print cpu, $0}'`)
         done
@@ -80,7 +80,7 @@ function Statistic_CPU_Ratio() {
         #统计每个cpu核使用率
         for ((i=0; i<=$[$cpu_count-1]; i++))
         do
-            c="cpu"$i
+            c="cpu$i"
             c_total_be=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu1.tmp)
             c_total_af=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu2.tmp)
             c_used_be=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$7+$8)}}' cpu1.tmp)
@@ -101,7 +101,7 @@ function Statistic_CPU_Ratio() {
         echo $max_cpu_used_ratio > ./result.tmp
         for ((i=0; i<=$[$cpu_count-1]; i++))
         do
-            c="cpu"$i
+            c="cpu$i"
             v1=`awk -v cpu=$c '{if($0 ~cpu){print $2}}' ./each0.tmp`
             v2=`awk -v cpu=$c '{if($0 ~cpu){print $2}}' ./each1.tmp`
             v3=`awk -v cpu=$c '{if($0 ~cpu){print $2}}' ./each2.tmp`
@@ -130,7 +130,7 @@ function main() {
     echo $(WriteOutJson "cpu" ${results[0]})
     for ((i=1; i<=$cpu_count; i++))
     do
-        c="cpu"$[$i-1]
+        c="cpu$[$i-1]"
         echo $(WriteOutJson "$c" ${results[$i]})
     done    
 
