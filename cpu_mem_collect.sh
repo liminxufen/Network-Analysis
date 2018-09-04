@@ -80,10 +80,10 @@ function Statistic_CPU_Ratio() {
         for ((i=0; i<=$[$cpu_count-1]; i++))
         do
             c="cpu$i"
-            #c_total_be=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu1.tmp)
-            #c_total_af=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu2.tmp)
-            #c_used_be=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$7+$8)}}' cpu1.tmp)
-            #c_used_af=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$7+$8)}}' cpu2.tmp)
+            #c_total_be=$(awk -v cpu=$c '{if($1 ~/^cpu$/){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu1.tmp)
+            #c_total_af=$(awk -v cpu=$c '{if($1 ~/^cpu$/){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu2.tmp)
+            #c_used_be=$(awk -v cpu=$c '{if($1 ~/^cpu$/){print ($2+$3+$4+$7+$8)}}' cpu1.tmp)
+            #c_used_af=$(awk -v cpu=$c '{if($1 ~/^cpu$/){print ($2+$3+$4+$7+$8)}}' cpu2.tmp)
             c_total_be=$(cat cpu1.tmp | grep -w $c | awk '{print ($2+$3+$4+$5+$6+$7+$8)}')
             c_total_af=$(cat cpu2.tmp | grep -w $c | awk '{print ($2+$3+$4+$5+$6+$7+$8)}')
             c_used_be=$(cat cpu1.tmp | grep -w $c | awk '{print ($2+$3+$4+$7+$8)}')
