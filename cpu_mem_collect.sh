@@ -6,7 +6,7 @@
 function WriteOutJson() {
     #local all_params=($(echo $@))
     #echo ${all_params[@]}
-    echo '{"metric":"'$1'","value":'$2'}'
+    echo '{"metric": "'$1'","value":'$2'}'
 }
 
 #求出最大值
@@ -38,7 +38,7 @@ function Statistic_CPU_Ratio() {
     if [[ -e each*.tmp ]]; then
         rm each*.tmp
     fi    
-    for ((j=0; j<4; j++ ))
+    for ((j=0; j<4; j++))
     do
         #计算cpu总揽
         cpu_be=(`cat /proc/stat | grep -w cpu | awk '{$1="";print $0}' | sed 's/^ *//'`)
@@ -48,7 +48,7 @@ function Statistic_CPU_Ratio() {
         for ((i=0; i<=$[$cpu_count-1]; i++))
         do
             c="cpu$i"
-            echo `cat /proc/stat | grep -w $c | awk -v cpu=$c '{$1="";print cpu, $0}'` >> ./cpu1.tmp
+            echo `cat /proc/stat | grep -w $c | awk '{print $0}'` >> ./cpu1.tmp
             #cpu_be=(`cat /proc/stat | grep -w $c | awk -v cpu=$c '{$1="";print cpu, $0}'`)
         done    
   
@@ -73,18 +73,21 @@ function Statistic_CPU_Ratio() {
         for ((i=0; i<=$[$cpu_count-1]; i++))
         do
             c="cpu$i"
-            echo `cat /proc/stat | grep -w $c | awk -v cpu=$c '{$1="";print cpu, $0}'` >> ./cpu2.tmp
+            echo `cat /proc/stat | grep -w $c | awk '{print $0}'` >> ./cpu2.tmp
             #cpu_af=(`cat /proc/stat | grep -w $c | awk -v cpu=$c '{$1="";print cpu, $0}'`)
         done
-
         #统计每个cpu核使用率
         for ((i=0; i<=$[$cpu_count-1]; i++))
         do
             c="cpu$i"
-            c_total_be=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu1.tmp)
-            c_total_af=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu2.tmp)
-            c_used_be=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$7+$8)}}' cpu1.tmp)
-            c_used_af=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$7+$8)}}' cpu2.tmp)
+            #c_total_be=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu1.tmp)
+            #c_total_af=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$5+$6+$7+$8)}}' cpu2.tmp)
+            #c_used_be=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$7+$8)}}' cpu1.tmp)
+            #c_used_af=$(awk -v cpu=$c '{if($0 ~cpu){print ($2+$3+$4+$7+$8)}}' cpu2.tmp)
+            c_total_be=$(cat cpu1.tmp | grep -w $c | awk '{print ($2+$3+$4+$5+$6+$7+$8)}')
+            c_total_af=$(cat cpu2.tmp | grep -w $c | awk '{print ($2+$3+$4+$5+$6+$7+$8)}')
+            c_used_be=$(cat cpu1.tmp | grep -w $c | awk '{print ($2+$3+$4+$7+$8)}')
+            c_used_af=$(cat cpu2.tmp | grep -w $c | awk '{print ($2+$3+$4+$7+$8)}')
             #echo $c_total_af $c_total_be $c_used_af $c_used_be
             if [ $c_total_af -eq $c_total_be ]; then
                 c_used_ratio=0
@@ -119,8 +122,10 @@ function Statistic_MEM() {
     local mem_total=`free -m | awk '{if($0~"Mem")print $2}'`
     local mem_used=`free -m | awk '{if($0~"Mem")print $3}'`
     local app_mem_used=`free -m | grep -w 'buffers/cache' | awk '{print $3}'`
+    if [ -z "$app_mem_used" ]; then
+	app_mem_used=0
+    fi		
     echo $mem_total $mem_used $app_mem_used
-    #sleep 2m
 }
 
 function main() {
@@ -134,7 +139,7 @@ function main() {
         echo $(WriteOutJson "$c" ${results[$i]})
     done    
 
-    sleep 2m
+    #sleep 2m
     #输出内存使用统计信息
     memres=($(Statistic_MEM))
     echo $(WriteOutJson "mem_total" ${memres[0]})
