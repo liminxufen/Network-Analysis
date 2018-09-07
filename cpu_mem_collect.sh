@@ -126,7 +126,8 @@ function Statistic_MEM() {
 	app_mem_used=0
     fi
     local mem_used_ratio=`echo $mem_used $mem_total | awk '{print ($1/$2)*100}'
-    echo $mem_total $mem_used $app_mem_used $mem_used_ratio
+    local app_mem_used_ratio=`echo $app_mem_used $mem_total | awk '{print ($1/$2)*100}'`
+    echo $mem_total $mem_used $app_mem_used $mem_used_ratio $app_mem_used_ratio
 }
 
 function main() {
@@ -147,6 +148,7 @@ function main() {
     echo $(WriteOutJson "mem_used" ${memres[1]})
     echo $(WriteOutJson "app_used" ${memres[2]})
     echo $(WriteOutJson "mem_used_ratio" ${memres[3]})
+    echo $(WriteOutJson "app_mem_used_ratio" ${memres[4]})
 }
 
 main
