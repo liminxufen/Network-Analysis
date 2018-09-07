@@ -65,9 +65,9 @@ function Statistic_CPU_Ratio() {
         else    
             cpu_used_ratio=`echo $cpu_total_af $cpu_total_be $cpu_used_af $cpu_used_be | awk '{print ($3-$4)/($1-$2)*100}'`
         fi
-        if [ ${max_cpu_used_ratio%.*} -lt ${cpu_used_ratio%.*} ]; then
-            max_cpu_used_ratio=$cpu_used_ratio       
-        fi    
+        #if [ ${max_cpu_used_ratio%.*} -lt ${cpu_used_ratio%.*} ]; then
+        max_cpu_used_ratio=`echo $max_cpu_used_ratio $cpu_used_ratio | awk '{if ($1>$2)print $1; else print $2}'`       
+        #fi    
 
         #15s后再次计算每个cpu核
         for ((i=0; i<=$[$cpu_count-1]; i++))
@@ -124,8 +124,9 @@ function Statistic_MEM() {
     local app_mem_used=`free -m | grep -w 'buffers/cache' | awk '{print $3}'`
     if [ -z "$app_mem_used" ]; then
 	app_mem_used=0
-    fi		
-    echo $mem_total $mem_used $app_mem_used
+    fi
+    local mem_used_ratio=`echo $mem_used $mem_total | awk '{print ($1/$2)*100}'
+    echo $mem_total $mem_used $app_mem_used $mem_used_ratio
 }
 
 function main() {
@@ -145,6 +146,7 @@ function main() {
     echo $(WriteOutJson "mem_total" ${memres[0]})
     echo $(WriteOutJson "mem_used" ${memres[1]})
     echo $(WriteOutJson "app_used" ${memres[2]})
+    echo $(WriteOutJson "mem_used_ratio" ${memres[3]})
 }
 
 main
