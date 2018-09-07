@@ -119,9 +119,9 @@ function Statistic_CPU_Ratio() {
 
 #统计内存使用量
 function Statistic_MEM() {
-    local mem_total=`free -m | awk '{if($0~"Mem")print $2}'`
-    local mem_used=`free -m | awk '{if($0~"Mem")print $3}'`
-    local app_mem_used=`free -m | grep -w 'buffers/cache' | awk '{print $3}'`
+    local mem_total=`free -b | awk '{if($0~"Mem")print $2}'`
+    local mem_used=`free -b | awk '{if($0~"Mem")print $3}'`
+    local app_mem_used=`free -b | grep -w 'buffers/cache' | awk '{print $3}'`
     if [ -z "$app_mem_used" ]; then
 	app_mem_used=0
     fi
